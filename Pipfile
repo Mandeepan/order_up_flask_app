@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+wtforms = "*"
+flask-wtf = "*"
+flask-sqlalchemy = "*"
+python-dotenv = "*"
+jinja2 = "*"
+flask-login = "*"
+werkzeug = "==2.3"
+sqlalchemy = "*"
+
+[dev-packages]
+pylint = "*"
+pycodestyle = "*"
+rope = "*"
+
+[requires]
+python_version = "3.12"
