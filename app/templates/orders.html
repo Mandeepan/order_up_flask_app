@@ -1,5 +1,70 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Order Up!</h1>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<div class="top-bar">
+    <h2>ASSIGN TABLE</h2>
+    <form method="POST">
+        {{ table_form.csrf_token }}
+        {{ table_form.tables.label }} {{ table_form.tables }}
+        {{ table_form.servers.label }} {{ table_form.servers }}
+        {{ table_form.assign(class_="btn btn-primary") }}
+    </form>
+    <form method="POST" action="{{ url_for('session.logout') }}" style="float: right;">
+        {{ close_table_form.csrf_token }}
+        <button type="submit" class="btn btn-warning">LOGOUT</button>
+    </form>
+</div>
+
+<div class="left-body">
+    <h3>YOUR OPEN ORDERS</h3>
+    <table>
+        {% for order in user_orders %}
+            <tr>
+                <td>Table {{ order.table_id }}</td>
+                <td>${{ order.total_amount() }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('orders.close_order', order_id=order.id) }}">
+                        {{ close_table_form.csrf_token }}
+                        {{ close_table_form.close(class_="btn btn-danger") }}
+                    </form>
+                </td>
+                <td>
+                    <button form="food-list" formaction="{{ url_for('orders.add_to_order', order_id=order.id) }}" class="btn btn-success">
+                        ADD TO ORDER
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="right-body">
+    <h3>ENTREES</h3>
+    <form id="food-list" method="POST">
+        {{ menu_item_form.csrf_token }}
+        {% for item in menu_items if item.type.name == "Entrees" %}
+            <div>
+                <input type="checkbox" name="menu_item_ids" value="{{ item.id }}"> {{ item.name }}
+            </div>
+        {% endfor %}
+
+        <h3>SIDES</h3>
+        {% for item in menu_items if item.type.name == "Sides" %}
+            <div>
+                <input type="checkbox" name="menu_item_ids" value="{{ item.id }}"> {{ item.name }}
+            </div>
+        {% endfor %}
+
+        <h3>BEVERAGES</h3>
+        {% for item in menu_items if item.type.name == "Beverages" %}
+            <div>
+                <input type="checkbox" name="menu_item_ids" value="{{ item.id }}"> {{ item.name }}
+            </div>
+        {% endfor %}
+    </form>
+</div>
 {% endblock %}

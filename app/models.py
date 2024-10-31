@@ -12,6 +12,8 @@ class Employee(db.Model, UserMixin):
     name = db.Column(db.String(100), nullable=False)
     employee_number = db.Column(db.Integer, nullable=False, unique=True)
     hashed_password = db.Column(db.String(255), nullable=False)
+    
+    orders = db.relationship('Order', back_populates='employee', cascade='all, delete-orphan')
 
     @property
     def password(self):
@@ -46,6 +48,7 @@ class MenuItem(db.Model):
 
     menu = db.relationship('Menu', back_populates='items')
     type = db.relationship('MenuItemType', back_populates='items')
+    order_details = db.relationship('OrderDetail', back_populates='menu_item', cascade='all, delete-orphan')
 
 # MenuItemType Model
 class MenuItemType(db.Model):
@@ -64,6 +67,7 @@ class Table(db.Model):
     number = db.Column(db.Integer, nullable=False, unique=True)
     capacity = db.Column(db.Integer, nullable=False)
     
+    orders = db.relationship('Order', back_populates='table', cascade='all, delete-orphan')
 
 
 # Order Model
@@ -78,6 +82,9 @@ class Order(db.Model):
     employee = db.relationship('Employee', back_populates='orders')
     table = db.relationship('Table', back_populates='orders')
     details = db.relationship('OrderDetail', back_populates='order', cascade='all, delete-orphan')
+    
+    def total_amount(self):
+        return sum(detail.menu_item.price for detail in self.details)
 
 # OrderDetail Model
 class OrderDetail(db.Model):
